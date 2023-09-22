@@ -22,7 +22,7 @@
   https://www.arduino.cc/en/Tutorial/BuiltInExamples/Blink
 */
 
-#define LED_BUILTIN 2
+#define LED_BUILTIN 15
 
 // the setup function runs once when you press reset or power the board
 void setup() {
@@ -36,4 +36,5 @@ void loop() {
   delay(1000);                      // wait for a second
   digitalWrite(LED_BUILTIN, LOW);   // turn the LED off by making the voltage LOW
   delay(1000);                      // wait for a second
+  digitalR
 }
