@@ -9,7 +9,6 @@ double frequency_list[8] = {261.6256, 293.6648, 329.6276, 349.2282,
                              391.9952, 440.0000, 493.8833, 523.2511};
 
 inline void BUZZ_ON() {digitalWrite(BZ_CTRL, HIGH); 
-                       ledcWrite(PWMCH, MAX_DUTY/2);
                        ledcWriteTone(PWMCH, INIT_FREQ);}
 inline void BUZZ_OFF() {digitalWrite(BZ_CTRL, LOW);}
 
@@ -34,3 +33,4 @@ void loop() {
   BUZZ_OFF();
   delay(100000);
 }
+

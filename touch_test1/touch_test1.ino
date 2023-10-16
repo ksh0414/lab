@@ -1,11 +1,11 @@
 #define _TOUCH_LEFT_27 27 // LEFT TOUCH 장치 Pin번호 매크로 지정(GPIO27)
 #define _TOUCH_RIGHT_4 4 // RIGHT TOUCH 장치 Pin번호 매크로 지정(GPIO4)
+#define LED_R 12
+#define LED_B 14
 #define LIMIT_LEFT 10
 #define LIMIT_RIGHT 11
 #define LEFT 0
 #define RIGHT 1
-#define LED_R 12
-#define LED_B 14
 
 
 int touch_set[2][2] = {{_TOUCH_LEFT_27, LIMIT_LEFT},
@@ -44,3 +44,4 @@ void sensorPrint()
   Serial.print("Right Touch = ");
   Serial.println(touchRead(_TOUCH_RIGHT_4)); // Right Touch Capacitor에 의한 전하량 Read
 }
+

@@ -8,7 +8,6 @@ uint8_t resolution_bits = 8;
 const uint32_t MAX_DUTY = (resolution_bits == 0) ? 0 : (1 << (resolution_bits))-1;
 
 inline void BUZZ_ON() {digitalWrite(BZ_CTRL, HIGH); 
-                       ledcWrite(PWMCH, MAX_DUTY/2);
                        ledcWriteTone(PWMCH, INIT_FREQ);}
 inline void BUZZ_OFF() {digitalWrite(BZ_CTRL, LOW);}
 

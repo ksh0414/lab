@@ -1,14 +1,14 @@
 #define _TOUCH_LEFT_27 27 // LEFT TOUCH 장치 Pin번호 매크로 지정(GPIO27)
 #define _TOUCH_RIGHT_4 4 // RIGHT TOUCH 장치 Pin번호 매크로 지정(GPIO4)
+#define LED_R 12
+#define LED_B 14
 #define LIMIT_LEFT 10
 #define LIMIT_RIGHT 11
 #define LEFT 0
 #define RIGHT 1
-#define LED_R 12
-#define LED_B 14
+#define INIT_FREQ 261.6256
 #define BZ_CTRL 2
 #define BZ_PWM 25
-#define INIT_FREQ 261.6256
 
 uint8_t PWMCH = 0;
 uint8_t resolution_bits = 8;
