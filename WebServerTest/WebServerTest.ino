@@ -1,5 +1,6 @@
 #include <WiFi.h>
 #define LED_PIN 15
+#define BT_PIN 22
 
 const char* ssid = "Ajou Univ";
 const char* password = "";
@@ -25,7 +26,6 @@ void setup() {
   Serial.println("IP address: ");
   Serial.println(WiFi.localIP());
   server.begin();
-  
 }
 
 void loop(){
