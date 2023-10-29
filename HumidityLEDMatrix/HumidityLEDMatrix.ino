@@ -38,7 +38,6 @@ B00000000
 Adafruit_IS31FL3731 matrix = Adafruit_IS31FL3731();
 void setup() {
 // I2C주소값 선언
-  //Adafruit_IS31FL3731 matrix = Adafruit_IS31FL3731();
   matrix.begin(); 
   Serial.begin(115200);
   myBME280.setI2CAddress(BME280_ADDR);
