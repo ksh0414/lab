@@ -1,81 +1,89 @@
+/*
+ *  This sketch sends random data over UDP on a ESP32 device
+ *
+ */
 #include <WiFi.h>
-const char* host = "172.21.53.198";
+#include <WiFiUdp.h>
 
+#define BT_PIN 13
 
-const char* ssid = "Ajou Univ";
-const char* password = "";
+// WiFi network name and password:
+const char * networkName = "";
+const char * networkPswd = "";
 
-int status = WL_IDLE_STATUS;
-WiFiClient client;
+//IP address to send UDP data to:
+// either use the ip address of the server or 
+// a network broadcast address
+const char * udpAddress = "192.168.1.183";
+const int udpPort = 3333;
 
-void setup()
-{
-    Serial.begin(115200);
-    delay(10);
+const char* inst[2] = {"ON", "OFF"};
+int state = 0;
 
-    // We start by connecting to a WiFi network
+//Are we currently connected?
+boolean connected = false;
 
-    Serial.println();
-    Serial.println();
-    Serial.print("Connecting to ");
-    Serial.println(ssid);
+//The udp library class
+WiFiUDP udp;
 
-    WiFi.begin(ssid, password);
+void setup(){
+  // Initilize hardware serial:
+  Serial.begin(115200);
+  
+  //Connect to the WiFi network
+  connectToWiFi(networkName, networkPswd);
 
-    while (WiFi.status() != WL_CONNECTED) {
-        delay(500);
-        Serial.print(".");
-    }
-
-    Serial.println("");
-    Serial.println("WiFi connected");
-    Serial.println("IP address: ");
-    Serial.println(WiFi.localIP());
+  pinMode(BT_PIN, INPUT);
 }
 
-int value = 0;
+void loop(){
+  //only send data when connected
+  while(!digitalRead(BT_PIN))
+    delay(50);
+  Serial.println("bt on");
+  if(connected){
+    //Send a packet
+    udp.beginPacket(udpAddress,udpPort);
+    udp.printf(inst[state]);
+    udp.endPacket();
+  }
+  state = state ? 0 : 1;
+  while(digitalRead(BT_PIN))
+    delay(50);
+  //Wait for 1 second
+  delay(1000);
+}
 
-void loop()
-{
-    delay(5000);
-    ++value;
+void connectToWiFi(const char * ssid, const char * pwd){
+  Serial.println("Connecting to WiFi network: " + String(ssid));
 
-    Serial.print("connecting to ");
-    Serial.println(host);
+  // delete old config
+  WiFi.disconnect(true);
+  //register event handler
+  WiFi.onEvent(WiFiEvent);
+  
+  //Initiate connection
+  WiFi.begin(ssid, pwd);
 
-    // Use WiFiClient class to create TCP connections
-    WiFiClient client;
-    const int httpPort = 80;
-    if (!client.connect(host, httpPort)) {
-        Serial.println("connection failed");
-        return;
+  Serial.println("Waiting for WIFI connection...");
+}
+
+//wifi event handler
+void WiFiEvent(WiFiEvent_t event){
+    switch(event) {
+      case ARDUINO_EVENT_WIFI_STA_GOT_IP:
+          //When connected set 
+          Serial.print("WiFi connected! IP address: ");
+          Serial.println(WiFi.localIP());  
+          //initializes the UDP state
+          //This initializes the transfer buffer
+          udp.begin(WiFi.localIP(),udpPort);
+          connected = true;
+          break;
+      case ARDUINO_EVENT_WIFI_STA_DISCONNECTED:
+          Serial.println("WiFi lost connection");
+          connected = false;
+          break;
+      default: break;
     }
-
-    // We now create a URI for the request
-    String url = "http://172.21.53.198/H";
-
-    Serial.print("Requesting URL: ");
-    Serial.println(url);
-
-    // This will send the request to the server
-    client.print(String("GET ") + url + " HTTP/1.1\r\n" +
-                 "Host: " + host + "\r\n" +
-                 "Connection: close\r\n\r\n");
-    unsigned long timeout = millis();
-    while (client.available() == 0) {
-        if (millis() - timeout > 5000) {
-            Serial.println(">>> Client Timeout !");
-            client.stop();
-            return;
-        }
-    }
-
-    // Read all the lines of the reply from server and print them to Serial
-    while(client.available()) {
-        String line = client.readStringUntil('\r');
-        Serial.print(line);
-    }
-
-    Serial.println();
-    Serial.println("closing connection");
 }

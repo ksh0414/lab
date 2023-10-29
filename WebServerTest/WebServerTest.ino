@@ -1,76 +1,77 @@
 #include <WiFi.h>
+#include <WiFiUdp.h>
+#include <string.h>
+
 #define LED_PIN 15
-#define BT_PIN 22
 
-const char* ssid = "Ajou Univ";
-const char* password = "";
+/* WiFi network name and password */
+const char * ssid = "";
+const char * pwd = "";
 
-WiFiServer server(80);
+// IP address to send UDP data to.
+// it can be ip address of the server or 
+// a network broadcast address
+// here is broadcast address
+const char * udpAddress = "192.168.1.148";
+const int udpPort = 3333;
 
-void setup() {
+//create UDP instance
+WiFiUDP udp;
+
+void setup(){
   Serial.begin(115200);
-  pinMode(LED_PIN, OUTPUT);
-  delay(10);
+  
+  //Connect to the WiFi network
+   WiFi.begin(ssid, pwd);
+  Serial.println("");
 
-  // delete old config
-  Serial.println();
-  Serial.print("Connecting to ");
-  Serial.println(ssid);
-  WiFi.begin(ssid, password);
+  // Wait for connection
   while (WiFi.status() != WL_CONNECTED) {
     delay(500);
     Serial.print(".");
   }
   Serial.println("");
-  Serial.println("WiFi connected.");
-  Serial.println("IP address: ");
+  Serial.print("Connected to ");
+  Serial.println(ssid);
+  Serial.print("IP address: ");
   Serial.println(WiFi.localIP());
-  server.begin();
+  //This initializes udp and transfer buffer
+  udp.begin(udpPort);
+
+  pinMode(LED_PIN, OUTPUT);
+  digitalWrite(LED_PIN, LOW);
 }
 
 void loop(){
-  WiFiClient client = server.available(); // listen for incoming clients
-
-  if (client) { // if you get a client,
-    Serial.println("New Client."); // print a message out the serial port
-    String currentLine = ""; // make a String to hold incoming data from the client
-    while (client.connected()) { // loop while the client's connected
-      if (client.available()) { // if there's bytes to read from the client,
-        char c = client.read(); // read a byte, then
-        Serial.write(c);// print it out the serial monitor
-        if (c == '\n') { // if the byte is a newline character
-          if (currentLine.length() == 0) {
-            client.println("HTTP/1.1 200 OK");
-            client.println("Content-type:text/html");
-            client.println();
-            client.print("<font size='100'>Web Server Test<br>");
-            client.print("Click <a href=\"/H\">here</a> LED ON<br>");
-            client.print("Click <a href=\"/L\">here</a> LED OFF<br>");
-
-            // The HTTP response ends with another blank line:
-            client.println();
-            // break out of the while loop:
-            break;
-
-          } 
-          else { // if you got a newline, then clear currentLine:
-            currentLine = "";
-          }
-        } 
-        else if (c != '\r') { // if you got anything else but a carriage return character,
-          currentLine += c; // add it to the end of the currentLine
-        }
-        // Check to see if the client request was "GET /H" or "GET /L":
-        if (currentLine.endsWith("GET /H")) {
-          digitalWrite(LED_PIN, HIGH); // GET /H turns the LED on
-        }
-        if (currentLine.endsWith("GET /L")) {
-          digitalWrite(LED_PIN, LOW); // GET /L turns the LED off
-        }
-      }
-    }
-    // close the connection:
-    client.stop();
-    Serial.println("Client Disconnected.");
+  //data will be sent to server
+  uint8_t buffer[50] = "hello world";
+  //send hello world to server
+  memset(buffer, 0, 50);
+  //processing incoming packet, must be called before reading the buffer
+  udp.parsePacket();
+  //receive response from server, it will be HELLO WORLD
+  if(udp.read(buffer, 50) <= 0)
+  {
+    delay(1000);
+    return;
   }
+  
+  if(strcmp((const char*)buffer, "ON") == 0)
+  {
+    digitalWrite(LED_PIN, HIGH);
+    Serial.println("recieve message: ON");
+  }
+  else if(strcmp((const char*)buffer, "OFF") == 0)
+  {
+    digitalWrite(LED_PIN, LOW);
+    Serial.println("recieve message: OFF");
+  }
+  else
+  {
+    digitalWrite(LED_PIN, LOW);
+    Serial.println("recieve message: invalid");
+  }
+  
+  delay(1000);
+  
 }
