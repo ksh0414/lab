@@ -12,6 +12,7 @@
 
 #define SERVICE_UUID        "4fafc201-1fb5-459e-8fcc-c5c9c331914b"
 #define CHARACTERISTIC_UUID "beb5483e-36e1-4688-b7f5-ea07361b26a8"
+#define LED_PIN 15
 
 
 class MyCallbacks: public BLECharacteristicCallbacks {
@@ -26,6 +27,12 @@ class MyCallbacks: public BLECharacteristicCallbacks {
 
         Serial.println();
         Serial.println("*********");
+
+        if(value == "ON")
+          digitalWrite(LED_PIN, HIGH);
+        else if(value == "OFF"))
+          digitalWrite(LED_PIN, LOW);
+        
       }
     }
 };
@@ -39,7 +46,7 @@ void setup() {
   Serial.println("4- Go to CUSTOM CHARACTERISTIC in CUSTOM SERVICE and write something");
   Serial.println("5- See the magic =)");
 
-  BLEDevice::init("MyESP32");
+  BLEDevice::init("MyESP32_4_S");
   BLEServer *pServer = BLEDevice::createServer();
 
   BLEService *pService = pServer->createService(SERVICE_UUID);
@@ -57,6 +64,9 @@ void setup() {
 
   BLEAdvertising *pAdvertising = pServer->getAdvertising();
   pAdvertising->start();
+
+  pinMode(LED_PIN, OUTPUT);
+  digitalWrite(LED_PIN, LOW)
 }
 
 void loop() {

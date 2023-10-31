@@ -3,22 +3,31 @@
 #include <string.h>
 
 #define LED_PIN 15
+#define LED_R_PIN 12
+#define LED_G_PIN 13
+#define LED_B_PIN 14
 
 /* WiFi network name and password */
-const char * ssid = "";
+const char * ssid = "Ajou Univ";
 const char * pwd = "";
 
 // IP address to send UDP data to.
 // it can be ip address of the server or 
 // a network broadcast address
 // here is broadcast address
-const char * udpAddress = "192.168.1.148";
+const char * udpAddress = "172.21.55.242";
 const int udpPort = 3333;
 
 //create UDP instance
 WiFiUDP udp;
 
 void setup(){
+  pinMode(LED_R_PIN, OUTPUT);
+  pinMode(LED_G_PIN, OUTPUT);
+  pinMode(LED_B_PIN, OUTPUT);
+  digitalWrite(LED_R_PIN, LOW);
+  digitalWrite(LED_G_PIN, LOW);
+  digitalWrite(LED_B_PIN, HIGH);
   Serial.begin(115200);
   
   //Connect to the WiFi network

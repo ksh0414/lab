@@ -16,14 +16,21 @@
 static BLEUUID serviceUUID("eb33a17e-6bc4-11ee-b962-0242ac120002");
 // The characteristic of the remote service we are interested in.
 static BLEUUID    charUUID("fbc92da6-6bc4-11ee-b962-0242ac120002");
-
-class MyCallbacks : public BLEClientCallbacks {
-  void onConnect(BLEClient* pclient) {
-  }
-
-  void onDisconnect(BLEClient* pclient) {
-    connected = false;
-    Serial.println("onDisconnect");
+int connected;
+class MyCallbacks: public BLECharacteristicCallbacks {
+  void onWrite(BLECharacteristic *pCharacteristic) {
+    std::string value = pCharacteristic->getValue();
+    if (value.length() > 0) {
+      Serial.println("*********");
+      Serial.print("New value: ");
+      for (int i = 0; i < value.length(); i++)
+      {
+        Serial.print(value[i]);
+      }
+      Serial.println();
+      Serial.println("*********");
+      Sferial.println("*********");
+    }
   }
 };
 
@@ -36,7 +43,7 @@ void setup() {
   Serial.println("5- See the magic =)");
   Serial.println("Starting Arduino BLE Client application...");
 
-  BLEDevice::init("MyESP32_6");
+  BLEDevice::init("MyESP32_4_S");
   BLEServer *pServer = BLEDevice::createServer();
   BLEService *pService = pServer->createService(serviceUUID);
   BLECharacteristic *pCharacteristic = pService->createCharacteristic(

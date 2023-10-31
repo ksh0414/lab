@@ -1,11 +1,21 @@
 #include "WiFi.h"
 
+#define LED_R_PIN 12
+#define LED_G_PIN 13
+#define LED_B_PIN 14
+
 void setup() {
-  Serial.begin(9600);
+  Serial.begin(115200);
   WiFi.mode(WIFI_STA);
   delay(100);
   Serial.println("Setup done");
 
+  pinMode(LED_R_PIN, OUTPUT);
+  pinMode(LED_G_PIN, OUTPUT);
+  pinMode(LED_B_PIN, OUTPUT);
+  digitalWrite(LED_R_PIN, HIGH);
+  digitalWrite(LED_G_PIN, LOW);
+  digitalWrite(LED_B_PIN, LOW);
 }
 
 void loop() {

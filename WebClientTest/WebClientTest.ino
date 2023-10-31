@@ -5,16 +5,19 @@
 #include <WiFi.h>
 #include <WiFiUdp.h>
 
-#define BT_PIN 13
+#define BT_PIN 2
+#define LED_R_PIN 12
+#define LED_G_PIN 13
+#define LED_B_PIN 14
 
 // WiFi network name and password:
-const char * networkName = "";
+const char * networkName = "Ajou Univ";
 const char * networkPswd = "";
 
 //IP address to send UDP data to:
 // either use the ip address of the server or 
 // a network broadcast address
-const char * udpAddress = "192.168.1.183";
+const char * udpAddress = "172.21.55.242";
 const int udpPort = 3333;
 
 const char* inst[2] = {"ON", "OFF"};
@@ -27,6 +30,12 @@ boolean connected = false;
 WiFiUDP udp;
 
 void setup(){
+  pinMode(LED_R_PIN, OUTPUT);
+  pinMode(LED_G_PIN, OUTPUT);
+  pinMode(LED_B_PIN, OUTPUT);
+  digitalWrite(LED_R_PIN, HIGH);
+  digitalWrite(LED_G_PIN, LOW);
+  digitalWrite(LED_B_PIN, LOW);
   // Initilize hardware serial:
   Serial.begin(115200);
   
@@ -71,7 +80,7 @@ void connectToWiFi(const char * ssid, const char * pwd){
 //wifi event handler
 void WiFiEvent(WiFiEvent_t event){
     switch(event) {
-      case ARDUINO_EVENT_WIFI_STA_GOT_IP:
+      case SYSTEM_EVENT_STA_GOT_IP:
           //When connected set 
           Serial.print("WiFi connected! IP address: ");
           Serial.println(WiFi.localIP());  
@@ -80,7 +89,7 @@ void WiFiEvent(WiFiEvent_t event){
           udp.begin(WiFi.localIP(),udpPort);
           connected = true;
           break;
-      case ARDUINO_EVENT_WIFI_STA_DISCONNECTED:
+      case SYSTEM_EVENT_STA_DISCONNECTED:
           Serial.println("WiFi lost connection");
           connected = false;
           break;

@@ -1,20 +1,32 @@
 #include <WiFi.h>
+#include <WiFiType.h>
 
-const char* ssid = "sanghyun";
-const char* password = "kim71228569";
+#define LED_R_PIN 12
+#define LED_G_PIN 13
+#define LED_B_PIN 14
+
+const char* ssid = "Ajou Univ";
+const char* password = "";
 
 void WiFiEvent(WiFiEvent_t event);
 void WiFiGotIP(WiFiEvent_t event, WiFiEventInfo_t info);
 
 
 void setup() {
+  pinMode(LED_R_PIN, OUTPUT);
+  pinMode(LED_G_PIN, OUTPUT);
+  pinMode(LED_B_PIN, OUTPUT);
+  digitalWrite(LED_R_PIN, HIGH);
+  digitalWrite(LED_G_PIN, LOW);
+  digitalWrite(LED_B_PIN, LOW);
+
   Serial.begin(115200);
   // delete old config
   WiFi.disconnect(true);
   delay(1000);
   // Examples of register wifi events
   WiFi.onEvent(WiFiEvent);
-  WiFi.onEvent(WiFiGotIP, WiFiEvent_t::ARDUINO_EVENT_WIFI_STA_GOT_IP);
+  WiFi.onEvent(WiFiGotIP, WiFiEvent_t::SYSTEM_EVENT_STA_GOT_IP);
   
   WiFi.begin(ssid, password);
   Serial.println("Wait for WiFi...");
@@ -30,12 +42,12 @@ void WiFiEvent(WiFiEvent_t event)
   Serial.printf("[WiFi-event] event: %d\n", event);
   switch (event)
   {
-    case ARDUINO_EVENT_WIFI_STA_GOT_IP:
+    case SYSTEM_EVENT_STA_GOT_IP:
       Serial.println("WiFi connected");
       Serial.println("IP address: ");
       Serial.println(WiFi.localIP());
       break;
-    case ARDUINO_EVENT_WIFI_STA_DISCONNECTED:
+    case SYSTEM_EVENT_STA_DISCONNECTED:
       Serial.println("WiFi lost connection");
       break;
   }
