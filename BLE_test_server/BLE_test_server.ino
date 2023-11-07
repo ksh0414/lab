@@ -40,8 +40,8 @@ uint8_t state = 0;
 // See the following for generating UUIDs:
 // https://www.uuidgenerator.net/
 
-#define SERVICE_UUID        "4fafc201-1fb5-459e-8fcc-c5c9c331914b"
-#define CHARACTERISTIC_UUID "beb5483e-36e1-4688-b7f5-ea07361b26a8"
+#define SERVICE_UUID        "6617b37c-6af6-47d7-8c2e-c3a03b5fdf99"
+#define CHARACTERISTIC_UUID "7ce7a3fc-215c-4ca8-9c66-1b53e2bb12f4"
 #define LED_PIN 15
 
 
@@ -67,6 +67,8 @@ void setup() {
 
   pinMode(LED_PIN, OUTPUT);
   digitalWrite(LED_PIN, LOW);
+
+  pinMode(BT_PIN, INPUT);
 
   Serial.begin(115200);
 
@@ -101,21 +103,24 @@ void setup() {
   Serial.println("Waiting a client connection to notify...");
 }
 
+
+
 void loop() {
     // notify changed value
+    uint8_t ON  = 'N';
+    uint8_t OFF = 'F';
     if (deviceConnected) {
-        while(!digitalRead(BT_PIN))
-          delay(50);
-        //Serial.println("bt on");
-        //Serial.println(state == 0 ? "ON" : "OFF");
-        value = value_list[state];
-        state = state ? 0 : 1;
-        while(digitalRead(BT_PIN))
-          delay(50);
-        digitalWrite(LED_PIN, value=='N' ? HIGH : LOW);
-        pCharacteristic->setValue(&value, 1);
+        Serial.println(digitalRead(BT_PIN));
+        while(!digitalRead(BT_PIN)){
+        Serial.println("bt on");
+        pCharacteristic->setValue(&ON, 1);
         pCharacteristic->notify();
-        delay(10); // bluetooth stack will go into congestion, if too many packets are sent
+        delay(500);
+        }
+        pCharacteristic->setValue(&OFF, 1);
+        pCharacteristic->notify();
+        Serial.println("notify");
+        delay(500); // bluetooth stack will go into congestion, if too many packets are sent
     }
     // disconnecting
     if (!deviceConnected && oldDeviceConnected) {

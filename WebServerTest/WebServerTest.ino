@@ -15,7 +15,7 @@ const char * pwd = "";
 // it can be ip address of the server or 
 // a network broadcast address
 // here is broadcast address
-const char * udpAddress = "172.21.55.242";
+const char * udpAddress = "172.21.55.149";
 const int udpPort = 3333;
 
 //create UDP instance
@@ -61,10 +61,9 @@ void loop(){
   //receive response from server, it will be HELLO WORLD
   if(udp.read(buffer, 50) <= 0)
   {
-    delay(1000);
+    delay(100);
     return;
   }
-  
   if(strcmp((const char*)buffer, "ON") == 0)
   {
     digitalWrite(LED_PIN, HIGH);

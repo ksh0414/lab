@@ -35,6 +35,7 @@ static void notifyCallback(
 
 class MyClientCallback : public BLEClientCallbacks {
   void onConnect(BLEClient* pclient) {
+    Serial.println("connected");
   }
 
   void onDisconnect(BLEClient* pclient) {

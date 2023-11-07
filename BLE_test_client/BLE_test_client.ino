@@ -6,45 +6,21 @@
 #include "BLEScan.h"
 
 #define SERVER_NAME "MyESP32_4_S_server"
-#define CHARACTERISTIC_UUID "beb5483e-36e1-4688-b7f5-ea07361b26a8"
+#define CHARACTERISTIC_UUID "7ce7a3fc-215c-4ca8-9c66-1b53e2bb12f4"
 #define LED_R_PIN 12
 #define LED_G_PIN 13
 #define LED_B_PIN 14
 #define LED_PIN 15
 
 // The remote service we wish to connect to.
-static BLEUUID serviceUUID("4fafc201-1fb5-459e-8fcc-c5c9c331914b");
+static BLEUUID serviceUUID("6617b37c-6af6-47d7-8c2e-c3a03b5fdf99");
 // The characteristic of the remote service we are interested in.
-static BLEUUID     onUUID("5158c79c-77cb-11ee-b962-0242ac120002");
-static BLEUUID    offUUID("570bc0ae-77cb-11ee-b962-0242ac120002");
-static BLEUUID   charUUID("beb5483e-36e1-4688-b7f5-ea07361b26a8");
+static BLEUUID   charUUID("7ce7a3fc-215c-4ca8-9c66-1b53e2bb12f4");
 
 static BLEAddress *pServerAddress;
 static boolean doConnect = false;
 static boolean connected = false;
 static BLERemoteCharacteristic* pRemoteCharacteristic;
-
-class MyCallbacks: public BLECharacteristicCallbacks {
-    void onWrite(BLECharacteristic *pCharacteristic) {
-      std::string value = pCharacteristic->getValue();
-
-      if (value.length() > 0) {
-        Serial.println("*********");
-        Serial.print("New value: ");
-        for (int i = 0; i < value.length(); i++)
-          Serial.print(value[i]);
-
-        Serial.println();
-        Serial.println("*********");
-
-        if(value == "ON")
-          digitalWrite(LED_PIN, HIGH);
-        else if(value == "OFF"))
-          digitalWrite(LED_PIN, LOW);
-        
-      }
-    }
-};
 
 static void notifyCallback(
   BLERemoteCharacteristic* pBLERemoteCharacteristic,
@@ -52,9 +28,10 @@ static void notifyCallback(
   size_t length,
   bool isNotify) {
     Serial.print("Notify callback for characteristic ");
-    Serial.print(pBLERemoteCharacteristic->getUUID().toString().c_str());
+    Serial.print(pBLERemoteCharacteristic->readValue().c_str());
     Serial.print(" of data length ");
     Serial.println(length);
+    //delay(100);
 }
 
 bool connectToServer(BLEAddress pAddress) {
@@ -133,7 +110,7 @@ void setup() {
 
   Serial.begin(115200);
   Serial.println("Starting Arduino BLE Client application...");
-  BLEDevice::init("");
+  BLEDevice::init("my");
 
   // Retrieve a Scanner and set the callback we want to use to be informed when we
   // have detected a new device.  Specify that we want active scanning and start the
@@ -168,14 +145,20 @@ void loop() {
   if (connected) {
     //String newValue = "Time since boot: " + String(millis()/1000);
     //Serial.println("Setting new characteristic value to \"" + newValue + "\"");
-    
     // Set the characteristic's value to be the array of bytes that is actually a string.
     //pRemoteCharacteristic->writeValue(newValue.c_str(), newValue.length());
+    String value = pRemoteCharacteristic->readValue().c_str();
+    Serial.println(value);
+
+    if(value == String('N'))
+      digitalWrite(LED_PIN, HIGH);
+    else
+      digitalWrite(LED_PIN, LOW);
   }
 
   // If we are connected to a peer BLE Server, update the characteristic each time we are reached
   // with the current time since boot.
 
   
-  delay(100); // Delay a second between loops.
+  delay(1000); // Delay a second between loops.
 } // End of loop

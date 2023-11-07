@@ -17,7 +17,7 @@ const char * networkPswd = "";
 //IP address to send UDP data to:
 // either use the ip address of the server or 
 // a network broadcast address
-const char * udpAddress = "172.21.55.242";
+const char * udpAddress = "172.21.55.149";
 const int udpPort = 3333;
 
 const char* inst[2] = {"ON", "OFF"};
@@ -55,6 +55,7 @@ void loop(){
     udp.beginPacket(udpAddress,udpPort);
     udp.printf(inst[state]);
     udp.endPacket();
+    Serial.println("send");
   }
   state = state ? 0 : 1;
   while(digitalRead(BT_PIN))
