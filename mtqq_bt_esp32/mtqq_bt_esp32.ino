@@ -1,8 +1,21 @@
 #include <WiFi.h>
 #include "PubSubClient.h"
-const char* ssid = "sanghyun";
-const char* password = "kim71228569";
+const char* ssid = "";
+const char* password = "";
 const char* mqttServer = "broker.hivemq.com";
+
+
+
+
+
+
+
+
+
+
+
+
+
 int port = 1883;
 String stMac;
 char mac[50];
